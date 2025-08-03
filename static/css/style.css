@@ -368,8 +368,8 @@ body {
 }
 
 .results-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 30px;
 }
 
@@ -448,75 +448,7 @@ body {
     opacity: 0.9;
 }
 
-/* Probabilities Card */
-.probabilities-card {
-    background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-    padding: 30px;
-    border-radius: 16px;
-    position: relative;
-    overflow: hidden;
-}
 
-.probabilities-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1') center/cover;
-    opacity: 0.1;
-    z-index: 0;
-}
-
-.probabilities-card > * {
-    position: relative;
-    z-index: 1;
-}
-
-.probabilities-header h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.probabilities-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.probability-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    backdrop-filter: blur(10px);
-    transition: transform 0.2s ease;
-}
-
-.probability-item:hover {
-    transform: translateX(5px);
-}
-
-.probability-label {
-    font-weight: 500;
-    color: #2d3748;
-    flex: 1;
-}
-
-.probability-value {
-    font-weight: 600;
-    color: #ff6b6b;
-    background: rgba(255, 107, 107, 0.1);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
 
 /* Question Info Styles */
 .question-info {
@@ -612,6 +544,16 @@ body {
     margin-top: 10px !important;
     font-weight: 600;
     color: #22c55e;
+}
+
+.explanation-warning {
+    background: rgba(245, 158, 11, 0.2);
+    border: 2px solid rgba(245, 158, 11, 0.5);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px !important;
+    font-weight: 600;
+    color: #f59e0b;
 }
 
 /* Loading Spinner */

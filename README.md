@@ -20,14 +20,29 @@ A beautiful Flask web application that uses machine learning to classify student
 
 1. **Clone or download the project files**
 
-2. **Install dependencies**:
+2. **Set up virtual environment** (recommended to avoid dependency conflicts):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   # or
+   venv\Scripts\activate     # On Windows
+   ```
+
+3. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Ensure model files are present**:
+4. **Ensure model files are present**:
    - `map-charting-student-math-misunderstandings/best_student_explanation_model.pkl`
    - `map-charting-student-math-misunderstandings/label_encoder.pkl`
+
+**Note**: If you encounter kernel issues with Jupyter notebooks, make sure to activate the virtual environment first and install jupyter in the virtual environment:
+```bash
+source venv/bin/activate
+pip install jupyter
+jupyter notebook
+```
 
 ## 🚀 Running the Application
 

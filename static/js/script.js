@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const predictionValue = document.getElementById('predictionValue');
     const confidenceFill = document.getElementById('confidenceFill');
     const confidenceText = document.getElementById('confidenceText');
-    const probabilitiesList = document.getElementById('probabilitiesList');
     const questionContent = document.getElementById('questionContent');
     const newQuestionBtn = document.getElementById('newQuestionBtn');
     const revealAnswerBtn = document.getElementById('revealAnswerBtn');
@@ -131,7 +130,8 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('correct_answer', currentQuestion.answer);
         }
         
-        // Convert user-friendly input to model format
+        // Send original answer for validation, converted answer for model
+        formData.append('original_answer', mcAnswer);
         const convertedMcAnswer = convertToModelFormat(mcAnswer);
         formData.set('mc_answer', convertedMcAnswer);
         
@@ -162,6 +162,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function displayResults(data) {
+        // Clear any existing question info first
+        const existingQuestionInfo = resultsContainer.querySelector('.question-info');
+        if (existingQuestionInfo) {
+            existingQuestionInfo.remove();
+        }
+        
         // Update prediction value
         predictionValue.textContent = formatPrediction(data.prediction);
         
@@ -170,29 +176,11 @@ document.addEventListener('DOMContentLoaded', function() {
         confidenceFill.style.width = `${confidence * 100}%`;
         confidenceText.textContent = `${(confidence * 100).toFixed(1)}%`;
         
-        // Update probabilities list
-        probabilitiesList.innerHTML = '';
-        data.probabilities.forEach((prob, index) => {
-            const item = document.createElement('div');
-            item.className = 'probability-item';
-            
-            const label = document.createElement('span');
-            label.className = 'probability-label';
-            label.textContent = formatPrediction(prob[0]);
-            
-            const value = document.createElement('span');
-            value.className = 'probability-value';
-            value.textContent = `${(prob[1] * 100).toFixed(1)}%`;
-            
-            item.appendChild(label);
-            item.appendChild(value);
-            probabilitiesList.appendChild(item);
-        });
-        
         // Add question and answer information if available
         if (data.question && data.correct_answer !== undefined) {
             const isCorrect = data.answer_accuracy ? data.answer_accuracy.is_correct : false;
             const modelOverride = data.model_override || false;
+            const explanationQuality = data.explanation_quality;
             
             const questionInfo = document.createElement('div');
             questionInfo.className = 'question-info';
@@ -208,7 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <strong>Result:</strong> ${isCorrect ? '✅ Correct!' : '❌ Incorrect'}
                     </p>
                     ${!isCorrect ? `<p class="explanation-tip"><strong>💡 Tip:</strong> ${getExplanationTip(data.correct_answer)}</p>` : ''}
-                    ${modelOverride ? `<p class="model-override"><strong>🤖 AI Note:</strong> Model prediction was adjusted based on answer accuracy</p>` : ''}
+                    ${explanationQuality && !explanationQuality.is_sensible ? `<p class="explanation-warning"><strong>⚠️ Explanation Issue:</strong> Your explanation doesn't match the mathematical operation needed. ${getExplanationGuidance(explanationQuality.expected_operation)}</p>` : ''}
+                    ${modelOverride ? `<p class="model-override"><strong>🤖 AI Note:</strong> Model prediction was adjusted based on answer and explanation analysis</p>` : ''}
                     ${data.answer_accuracy && data.answer_accuracy.is_correct ? `<p class="correct-feedback"><strong>✅ Great job!</strong> Your answer is mathematically correct!</p>` : ''}
                 </div>
             `;
@@ -274,6 +263,17 @@ document.addEventListener('DOMContentLoaded', function() {
             0.4: "4/10 = 0.4 = 40%"
         };
         return tips[answer] || "Double-check your calculation!";
+    }
+
+    function getExplanationGuidance(expectedOperation) {
+        const guidance = {
+            'addition': "For addition problems, you should add the fractions, not multiply them.",
+            'division': "For division problems, you should divide the fractions, not add them.",
+            'multiplication': "For multiplication problems, you should multiply the fractions, not add them.",
+            'subtraction': "For subtraction problems, you should subtract the fractions, not multiply them. When finding what's left, you need to subtract what was used/consumed.",
+            'unknown': "Make sure your explanation matches the mathematical operation in the question."
+        };
+        return guidance[expectedOperation] || guidance['unknown'];
     }
 
     function convertToModelFormat(input) {
